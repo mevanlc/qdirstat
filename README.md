@@ -1058,12 +1058,13 @@ Install Xcode Command Line Tools (`xcode-select --install`) and the Homebrew
 dependencies:
 
 ```sh
-brew install just qtbase qt5compat qtsvg gettext
+brew install just qtbase qt5compat qtsvg gettext openssl
 ```
 
 From the source directory, use:
 
 ```sh
+just setup-signing-macos # Once per Mac; macOS may ask for your Keychain password.
 just build-macos
 just test-macos
 just install-macos
@@ -1079,6 +1080,22 @@ write access to `/Applications` and does not automatically invoke `sudo`.
 The app uses the installed Homebrew Qt and gettext libraries, so those
 dependencies must remain installed. Missing prerequisites are reported without
 installing packages automatically.
+
+Local builds are signed with a reusable **QDirStat Local Code Signing** identity
+in your login Keychain and the bundle identifier `io.github.mevanlc.qdirstat`.
+The setup recipe creates a ten-year self-signed certificate, trusts it for code
+signing in your user account, and permits `/usr/bin/codesign` to use its private
+key. It reuses that identity on later runs. Keep the certificate and matching
+private key: recreating them changes the app's identity.
+
+This lets macOS recognize rebuilt versions as the same app when evaluating
+privacy permissions. Switching from an older ad-hoc-signed installation may
+require granting permissions once more. This local identity is for development
+on this Mac; it does not provide Developer ID signing or notarization.
+
+To use an existing signing identity from your login Keychain instead, set
+`QDIRSTAT_SIGN_IDENTITY` to its exact name when running the recipes. Builds fail
+with an actionable message if the selected identity is unavailable.
 
 For additional background, see Jesus Herrera's
 [build instructions](https://github.com/jesusha123/qdirstat-macos/blob/main/BUILD.md).
