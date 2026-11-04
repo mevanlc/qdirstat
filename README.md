@@ -1051,7 +1051,33 @@ and via Homebrew.
 
 ### Building on macOS
 
-See Jesus Herrera's
+Install Xcode Command Line Tools (`xcode-select --install`) and the Homebrew
+dependencies:
+
+```sh
+brew install just qtbase qt5compat qtsvg gettext
+```
+
+From the source directory, use:
+
+```sh
+just build-macos
+just test-macos
+just install-macos
+```
+
+`build-macos` creates `build/macos/src/qdirstat.app`. `test-macos` builds the app
+and checks the bundle and offscreen startup automatically; it is a smoke check,
+not a full functional test suite. `install-macos` builds and checks the app, then
+copies it to `/Applications/QDirStat.app`, replacing any existing bundle. The
+previous app is retained until the replacement succeeds. Installation requires
+write access to `/Applications` and does not automatically invoke `sudo`.
+
+The app uses the installed Homebrew Qt and gettext libraries, so those
+dependencies must remain installed. Missing prerequisites are reported without
+installing packages automatically.
+
+For additional background, see Jesus Herrera's
 [build instructions](https://github.com/jesusha123/qdirstat-macos/blob/main/BUILD.md).
 
 Notice that those instructions are also based on using the original QDirStat
