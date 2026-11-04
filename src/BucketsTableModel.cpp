@@ -20,7 +20,7 @@ BucketsTableModel::BucketsTableModel( QWidget * parent, HistogramView * histogra
     QAbstractTableModel( parent ),
     _histogram( histogram )
 {
-    // logDebug() << "init" << endl;
+    reset();
 }
 
 
@@ -32,14 +32,26 @@ BucketsTableModel::~BucketsTableModel()
 
 void BucketsTableModel::reset()
 {
+    QVector<Bucket> buckets;
+    const int count = _histogram->bucketCount();
+    buckets.reserve( count );
+
+    for ( int row = 0; row < count; ++row )
+    {
+        buckets.append( { _histogram->bucketStart( row ),
+                          _histogram->bucketEnd( row ),
+                          _histogram->bucket( row ) } );
+    }
+
     beginResetModel();
+    _buckets.swap( buckets );
     endResetModel();
 }
 
 
 int BucketsTableModel::rowCount( const QModelIndex & parent ) const
 {
-    return parent.isValid() ? 0 : _histogram->bucketCount();
+    return parent.isValid() ? 0 : _buckets.size();
 }
 
 
@@ -62,16 +74,17 @@ QVariant BucketsTableModel::data( const QModelIndex & index, int role ) const
 	    {
                 int row = index.row();
 
-                if ( row < 0 || row >= _histogram->bucketCount() )
+                if ( row < 0 || row >= _buckets.size() )
                     return QVariant();
 
+                const Bucket & bucket = _buckets.at( row );
                 QString result;
 
                 switch ( index.column() )
                 {
-                    case StartCol:  result = formatSize( _histogram->bucketStart( row ) ); break;
-                    case EndCol:    result = formatSize( _histogram->bucketEnd  ( row ) ); break;
-                    case ValueCol:  result = QString::number( _histogram->bucket( row ) ); break;
+                    case StartCol:  result = formatSize( bucket.start ); break;
+                    case EndCol:    result = formatSize( bucket.end ); break;
+                    case ValueCol:  result = QString::number( bucket.count ); break;
 
                     default:        return QVariant();
                 }
@@ -115,7 +128,7 @@ QVariant BucketsTableModel::headerData( int	        section,
             }
             else
             {
-                if ( section < _histogram->bucketCount() )
+                if ( section < _buckets.size() )
                     return " " + QString::number( section + 1 ) + " ";
                 else
                     return QVariant();
@@ -133,13 +146,3 @@ QVariant BucketsTableModel::headerData( int	        section,
 	    return QVariant();
     }
 }
-
-
-Qt::ItemFlags BucketsTableModel::flags( const QModelIndex &index ) const
-{
-    Qt::ItemFlags flags = QAbstractTableModel::flags( index );
-    flags |= Qt::ItemIsSelectable;
-
-    return flags;
-}
-

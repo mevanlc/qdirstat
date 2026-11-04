@@ -11,6 +11,7 @@
 #define BucketsTableModel_h
 
 #include <QAbstractTableModel>
+#include <QVector>
 
 
 namespace QDirStat
@@ -19,7 +20,7 @@ namespace QDirStat
 
     /**
      * Data model for the buckets table in the file size statistics window.
-     * This displays the data of that window's histogram view in a table.
+     * This publishes a snapshot of that window's histogram data in a table.
      **/
     class BucketsTableModel: public QAbstractTableModel
     {
@@ -50,7 +51,8 @@ namespace QDirStat
         HistogramView * histogram() const { return _histogram; }
 
         /**
-         * Notification that data in the histogram have been reset.
+         * Publish the current histogram data, notifying views before replacing
+         * the table's previous snapshot.
          **/
         void reset();
 
@@ -81,16 +83,17 @@ namespace QDirStat
 				     Qt::Orientation orientation,
 				     int	     role ) const Q_DECL_OVERRIDE;
 
-	/**
-	 * Return item flags for the specified model index. This specifies if
-	 * the item can be selected, edited etc.
-	 **/
-	virtual Qt::ItemFlags flags( const QModelIndex &index ) const Q_DECL_OVERRIDE;
-
-
     protected:
 
+        struct Bucket
+        {
+            qreal start;
+            qreal end;
+            qreal count;
+        };
+
         HistogramView * _histogram;
+        QVector<Bucket> _buckets;
     };
 }
 

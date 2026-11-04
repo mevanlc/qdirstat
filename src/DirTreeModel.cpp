@@ -324,7 +324,8 @@ FileInfo * DirTreeModel::itemFromIndex( const QModelIndex & index )
 
 int DirTreeModel::rowCount( const QModelIndex & parentIndex ) const
 {
-    if ( ! _tree )
+    // Only column zero owns children; parent() always returns column zero.
+    if ( ! _tree || ( parentIndex.isValid() && parentIndex.column() != 0 ) )
 	return 0;
 
     int count = 0;
