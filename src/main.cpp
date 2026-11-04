@@ -15,6 +15,7 @@
 
 #include "QDirStatApp.h"
 #include "MainWindow.h"
+#include "MenuIconStyle.h"
 #include "DirTreeModel.h"
 #include "Settings.h"
 #include "Translator.h"
@@ -126,6 +127,10 @@ int main( int argc, char *argv[] )
     QApplication::setAttribute( Qt::AA_DontUseNativeMenuBar );
 
     QApplication qtApp( argc, argv);
+#ifdef Q_OS_MACOS
+    // Align iconless entries with the icon column in macOS menus.
+    qtApp.setStyle( new QDirStat::MenuIconStyle( qtApp.style() ) );
+#endif
     QStringList argList = QCoreApplication::arguments();
     argList.removeFirst(); // Remove program name
     logQtEnv();

@@ -1036,6 +1036,9 @@ Features ported from the old KDirStat:
 
 ## macOS Compatibility
 
+Menu entries without an icon reserve transparent icon space so their labels
+align with entries that have icons. This includes submenus and context menus.
+
 ### Ready-made Binaries for macOS
 
 **New 2024-02-13:**

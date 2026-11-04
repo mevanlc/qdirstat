@@ -209,6 +209,7 @@ HEADERS	  =				\
 	    Logger.h			\
             LogStream.h                 \
 	    MainWindow.h		\
+	    MenuIconStyle.h		\
 	    MessagePanel.h		\
 	    MimeCategorizer.h		\
 	    MimeCategory.h		\
